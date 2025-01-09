@@ -6,8 +6,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../services/auth_services.dart';
-import '../../services/database_services.dart';
-import '../../services/scheduler_service.dart';
 import 'forget_page.dart';
 import '../home/home_nav.dart';
 import 'landing_page.dart';

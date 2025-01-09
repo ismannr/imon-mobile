@@ -97,7 +97,7 @@ class LandingPage extends StatelessWidget {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SignUpPage()),
+                              MaterialPageRoute(builder: (context) => const SignUpPage()),
                             );
                           },
                           style: ButtonStyle(

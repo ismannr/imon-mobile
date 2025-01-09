@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:imon_app/models/validation_data.dart';
@@ -12,7 +11,7 @@ import 'home_nav.dart';
 import 'notification_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -52,7 +51,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final String userName = (userData?['name'] ?? "N/A").split(' ')[0];
-    final String businessName = userData?['business_desc'] ?? "N/A";
+    final String businessName = userData?['business_name'] ?? "N/A";
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
         statusBarColor: Colors.transparent,
@@ -79,7 +78,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  child: ValueListenableBuilder<File?>(
+                  child: ValueListenableBuilder<Uint8List?>(
                     valueListenable: profilePictureNotifier,
                     builder: (context, profilePic, child) {
                       if (profilePic == null) {
@@ -92,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                         );
                       } else {
                         return ClipOval(
-                          child: Image.file(
+                          child: Image.memory(
                             profilePic,
                             width: 60,
                             height: 60,
@@ -180,7 +179,7 @@ class _HomePageState extends State<HomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NotificationPage(),
+                                  builder: (context) => const NotificationPage(),
                                 ),
                               ).then((_) {
                                 hasValidationData();

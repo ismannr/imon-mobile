@@ -20,7 +20,7 @@ import '../../services/pond_services.dart';
 import '../../utils/timezone.dart';
 import 'home_page.dart';
 
-ValueNotifier<File?> profilePictureNotifier = ValueNotifier<File?>(null);
+ValueNotifier<Uint8List?> profilePictureNotifier = ValueNotifier<Uint8List?>(null);
 
 class HomeNav extends StatefulWidget {
   const HomeNav({super.key});
@@ -33,7 +33,6 @@ class _HomeNavState extends State<HomeNav> {
   bool isLoggedIn = false;
   bool showFAB = false;
   int index = 0;
-  Timer? _validationTimer;
 
   @override
   void initState() {
@@ -62,7 +61,7 @@ class _HomeNavState extends State<HomeNav> {
   }
 
   void startValidationCheck() {
-    _validationTimer = Timer.periodic(const Duration(minutes: 1), (timer) async {
+    Timer.periodic(const Duration(minutes: 1), (timer) async {
       await checkValidation();
       if (mounted){
         setState(() {});
@@ -72,8 +71,14 @@ class _HomeNavState extends State<HomeNav> {
 
   Future<void> downloadProfilePicture() async {
     File? profilePic = await downloadAndSaveProfilePicture();
-    profilePictureNotifier.value = profilePic;
+
+    if (profilePic != null && await profilePic.exists()) {
+      profilePictureNotifier.value = await profilePic.readAsBytes();
+    } else {
+      profilePictureNotifier.value = null;
+    }
   }
+
 
 
   Future<void> getMonitor() async {
@@ -226,7 +231,7 @@ class _HomeNavState extends State<HomeNav> {
     final TextEditingController deviceNameController = TextEditingController();
     final TextEditingController deviceIdController = TextEditingController();
 
-    final result = await showDialog(
+    await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(

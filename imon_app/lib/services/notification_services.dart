@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -35,24 +34,30 @@ Future<void> deleteNotification(
 
     if (response.statusCode == 200) {
       await _deleteValidationData(notificationId, onStateUpdate);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Notifikasi telah dihapus'),
-        ),
-      );
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Notifikasi telah dihapus'),
+          ),
+        );
+      }
     } else {
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal menghapus notifikasi: ${response.statusCode}'),
+          ),
+        );
+      }
+    }
+  } catch (e) {
+    if(context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Gagal menghapus notifikasi: ${response.statusCode}'),
+          content: Text('Error deleting notification: $e'),
         ),
       );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error deleting notification: $e'),
-      ),
-    );
   }
 }
 
@@ -78,24 +83,29 @@ Future<void> deleteAllNotifications(BuildContext context, VoidCallback onStateUp
       await db.delete('validation_data');
 
       onStateUpdate();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Semua notifikasi telah dihapus')),
-      );
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Semua notifikasi telah dihapus')),
+        );
+      }
     } else {
+      if(context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Gagal menghapus semua notifikasi: ${response.statusCode}',
+            ),
+          ),
+        );
+      }
+    }
+  } catch (e) {
+    if(context.mounted){
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            'Gagal menghapus semua notifikasi: ${response.statusCode}',
-          ),
+          content: Text('Error deleting all notifications: $e'),
         ),
       );
     }
-  } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Error deleting all notifications: $e'),
-      ),
-    );
   }
 }

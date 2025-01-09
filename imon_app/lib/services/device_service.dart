@@ -77,23 +77,29 @@ Future<void> unassignDevice(
         final response = await unassignDeviceFromPond(deviceId);
         if (response.statusCode == 200) {
           onSuccess();
-          showAlert(
-            context,
-            title: 'Success',
-            message: 'Device unassigned successfully.',
-          );
+          if(context.mounted) {
+            showAlert(
+              context,
+              title: 'Success',
+              message: 'Device unassigned successfully.',
+            );
+          }
         } else {
           final responseBody = json.decode(response.body);
           final errorMessage =
               responseBody['message'] ?? 'Failed to unassigned device.';
-          showAlert(context, title: 'Error', message: errorMessage);
+          if(context.mounted) {
+            showAlert(context, title: 'Error', message: errorMessage);
+          }
         }
       } catch (e) {
-        showAlert(
-          context,
-          title: 'Error',
-          message: 'An error occurred: $e',
-        );
+        if(context.mounted) {
+          showAlert(
+            context,
+            title: 'Error',
+            message: 'An error occurred: $e',
+          );
+        }
       }
     },
     dismissible: false,
@@ -112,35 +118,37 @@ Future<void> promptAddDeviceToPond(
 }) async {
   try {
     final pondData = await fetchPonds();
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Select a Pond"),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: pondData.length,
-              itemBuilder: (context, index) {
-                final pond = pondData[index];
-                return ListTile(
-                  title: Text(pond['group_name']),
-                  subtitle: Text("Devices: ${pond['number_of_device']}"),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    onPondSelected(
-                      pond['id'] ?? 'N/A',
-                      pond['group_name'] ?? 'N/A',
-                    );
-                  },
-                );
-              },
+    if(context.mounted) {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Select a Pond"),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: pondData.length,
+                itemBuilder: (context, index) {
+                  final pond = pondData[index];
+                  return ListTile(
+                    title: Text(pond['group_name']),
+                    subtitle: Text("Devices: ${pond['number_of_device']}"),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                      onPondSelected(
+                        pond['id'] ?? 'N/A',
+                        pond['group_name'] ?? 'N/A',
+                      );
+                    },
+                  );
+                },
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    }
   } catch (e) {
     showErrorAlert('$e');
   }

@@ -1,6 +1,5 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:wheel_slider/wheel_slider.dart';
 
 import '../../models/validation_data.dart';
@@ -21,7 +20,7 @@ class FLGraphWidget extends StatefulWidget {
   final double minScale;
 
   const FLGraphWidget({
-    Key? key,
+    super.key,
     required this.title,
     required this.param,
     required this.showAsInteger,
@@ -35,7 +34,7 @@ class FLGraphWidget extends StatefulWidget {
     required this.maxScale,
     required this.minScale,
     required this.date,
-  }) : super(key: key);
+  });
 
   @override
   _FLGraphWidgetState createState() => _FLGraphWidgetState();
@@ -189,7 +188,7 @@ class _FLGraphWidgetState extends State<FLGraphWidget> {
                 const SizedBox(width: 6),
                 Text(
                   'Data: ${widget.unit}',
-                  style: TextStyle(fontSize: 12),
+                  style: const TextStyle(fontSize: 12),
                 ),
                 const SizedBox(width: 16),
                 if (widget.isThresholdActive && widget.thresholdMax != null)
@@ -307,12 +306,12 @@ class _FLGraphWidgetState extends State<FLGraphWidget> {
                         ),
                         borderData: FlBorderData(show: true),
                         lineTouchData: LineTouchData(
-                          touchTooltipData: LineTouchTooltipData(),
+                          touchTooltipData: const LineTouchTooltipData(),
                           handleBuiltInTouches: showSpot,
                         ),
                         showingTooltipIndicators: [],
-                        clipData: FlClipData.all(),
-                        gridData: FlGridData(show: false),
+                        clipData: const FlClipData.all(),
+                        gridData: const FlGridData(show: false),
                         lineBarsData: [
                           LineChartBarData(
                             spots: dataPoints,

@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:imon_app/services/profile_picture_services.dart';
 import 'package:imon_app/services/scheduler_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:imon_app/pages/auth/landing_page.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/ponds_data.dart';
 import '../utils/alert.dart';
 import 'database_services.dart';
 
@@ -122,22 +122,26 @@ void sessionTimeout(BuildContext context){
     title: "Sesi Berakhir",
     message: "Sesi anda telah berakhir, silahkan masuk kembali",
     onClose: () async {
+      ponds = [];
       final prefs = await SharedPreferences.getInstance();
       stopBackgroundService();
       await deleteLocalProfilePicture();
       await DatabaseService.instance.closeDb();
       await prefs.remove('cookie');
       await prefs.remove('user_data');
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const LandingPage()),
-      );
+      if(context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LandingPage()),
+        );
+      }
     },
     dismissible: false,
   );
 }
 
 Future<void> logout() async {
+  ponds = [];
   final prefs = await SharedPreferences.getInstance();
   await prefs.remove('cookie');
   await prefs.remove('user_data');

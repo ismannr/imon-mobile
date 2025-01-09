@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -57,7 +58,7 @@ Future<void> deleteLocalProfilePicture() async {
   }
 }
 
-Future<File?> getProfilePicture() async {
+Future<Uint8List?> getProfilePicture() async {
   try {
     final appDir = await getApplicationDocumentsDirectory();
     final profilePicDir = '${appDir.path}/profile_pictures';
@@ -67,12 +68,12 @@ Future<File?> getProfilePicture() async {
 
     final jpgFile = File(jpgFilePath);
     if (await jpgFile.exists()) {
-      return jpgFile;
+      return jpgFile.readAsBytes();
     }
 
     final pngFile = File(pngFilePath);
     if (await pngFile.exists()) {
-      return pngFile;
+      return pngFile.readAsBytes();
     }
   } catch (e) {
     debugMode('Terjadi masalah saat memuat foto: $e');
@@ -98,21 +99,25 @@ Future<void> pickImage({
       if (fileExtension == 'jpg' || fileExtension == 'jpeg' || fileExtension == 'png') {
         onImagePicked(File(pickedFile.path));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Format foto harus .jpg, .jpeg, atau .png'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        if(context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Format foto harus .jpg, .jpeg, atau .png'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
       }
     }
   } catch (e) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Terjadi masalah saat memilih gambar: $e'),
-        backgroundColor: Colors.red,
-      ),
-    );
+    if(context.mounted){
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Terjadi masalah saat memilih gambar: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 }
 

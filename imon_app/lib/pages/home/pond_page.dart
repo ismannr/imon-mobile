@@ -194,8 +194,8 @@ class _PondPageState extends State<PondPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.add_circle_outline),
-                title: Text('Tambah Perangkat Ke Kolam'),
+                leading: const Icon(Icons.add_circle_outline),
+                title: const Text('Tambah Perangkat Ke Kolam'),
                 onTap: () async {
                   assignDevice();
                   setState(() {});
@@ -204,8 +204,8 @@ class _PondPageState extends State<PondPage> {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.data_thresholding),
-                title: Text('Atur Batasan Kolam'),
+                leading: const Icon(Icons.data_thresholding),
+                title: const Text('Atur Batasan Kolam'),
                 onTap: openSettingsForm,
               ),
             ],
@@ -312,7 +312,12 @@ class _PondPageState extends State<PondPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setModalState) {
             return Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: 20.0,
+                left: 20.0,
+                right: 20.0,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

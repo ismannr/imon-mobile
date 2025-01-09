@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:imon_app/pages/home/home_nav.dart';
 import 'package:imon_app/utils/debug.dart';
 import 'package:imon_app/services/profile_picture_services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -66,6 +67,7 @@ Future<void> deleteProfilePicture(Function onDeletionComplete) async {
 
       if (deleteResponse.statusCode == 204) {
         await deleteLocalProfilePicture();
+        profilePictureNotifier.value = null;
         onDeletionComplete();
       } else {
         if (kDebugMode) {
@@ -140,6 +142,7 @@ Future<void> uploadProfilePicture(BuildContext context, bool isFromGallery, Func
 
                 final file = File(filePath);
                 await file.writeAsBytes(imageBytes);
+                profilePictureNotifier.value = imageBytes;
                 onUploadComplete();
               } else if (uploadResponse.statusCode == 204) {
                 debugMode('No content to upload.');

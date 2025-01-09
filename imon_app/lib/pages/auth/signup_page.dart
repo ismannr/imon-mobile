@@ -32,7 +32,6 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _businessDescController = TextEditingController();
 
   bool _isSubmitted = false;
-  bool _isLoadingProvinces = true;
   List<Map<String, String>> _cities = [];
   String? _selectedCity;
   String? _selectedProvince;
@@ -81,7 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
       if (age < 17 ||
           (age == 17 &&
               DateTime.now()
-                  .isBefore(pickedDate.add(Duration(days: 365 * 17))))) {
+                  .isBefore(pickedDate.add(const Duration(days: 365 * 17))))) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Pengguna harus diatas 17 tahun')),
         );
@@ -127,6 +126,7 @@ class _SignUpPageState extends State<SignUpPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Pendaftaran berhasil!')),
           );
+          Navigator.pop(context);
         } else if (response.statusCode == 400) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

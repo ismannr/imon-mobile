@@ -114,12 +114,12 @@ class CustomDropdownField extends StatelessWidget {
   final FormFieldValidator<String>? validator;
 
   const CustomDropdownField({
-    Key? key,
+    super.key,
     required this.controller,
     required this.labelText,
     required this.onTap,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

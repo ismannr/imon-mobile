@@ -1,6 +1,4 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -22,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Future<Map<String, dynamic>> _profileData;
-  File? localProfilePicture;
+  Uint8List? localProfilePicture;
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
   final cityController = TextEditingController();
@@ -84,9 +82,11 @@ class _ProfilePageState extends State<ProfilePage> {
         _cities = cities;
       });
     } catch (e) {
+      if(context.mounted){
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     }
+      }
   }
 
   Future<Map<String, dynamic>> _updateProfile() async {
@@ -171,7 +171,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                       Column(
                                         children: [
                                           Row(
-                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
                                             children: [
                                               IconButton(
                                                 icon: const Icon(Icons.close,
@@ -183,20 +184,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                             ],
                                           ),
                                           InteractiveViewer(
-                                            child:
-                                                localProfilePicture != null &&
-                                                        localProfilePicture!
-                                                            .existsSync()
-                                                    ? Image.file(
-                                                        localProfilePicture!,
-                                                        fit: BoxFit.contain,
-                                                      )
-                                                    : const Image(
-                                                        image: AssetImage(
-                                                            'assets/images/default_profile.png'),
-                                                        fit: BoxFit.contain,
-                                                      ),
-                                          ),
+                                            child: localProfilePicture != null
+                                                ? Image.memory(
+                                              localProfilePicture!,
+                                              fit: BoxFit.contain,
+                                            )
+                                                : const Image(
+                                              image: AssetImage('assets/images/default_profile.png'),
+                                              fit: BoxFit.contain,
+                                            ),
+                                          )
                                         ],
                                       ),
                                       const SizedBox(height: 16),
@@ -310,7 +307,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                         width: 256,
                                         height: 256,
                                       ),
-                                      FutureBuilder<File?>(
+                                      FutureBuilder<Uint8List?>(
                                         future: getProfilePicture(),
                                         builder: (context, snapshot) {
                                           if (snapshot.connectionState ==
@@ -329,7 +326,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                               snapshot.data != null) {
                                             return Container(
                                               color: Colors.white,
-                                              child: Image.file(
+                                              child: Image.memory(
                                                 snapshot.data!,
                                                 fit: BoxFit.cover,
                                                 width: 256,
@@ -499,7 +496,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           backgroundColor:
                                               AppStyling.buttonColor),
                                       onPressed: () async {
-                                        if (selectedProvince == null ||
+                                        if (selectedProvince != null &&
                                             selectedCity == null) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
@@ -510,7 +507,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                           return;
                                         }
 
-                                        if (addressController.text.length < 5) {
+                                        if (addressController.text.length < 5 &&
+                                            addressController.text.isNotEmpty) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
@@ -520,8 +518,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                           return;
                                         }
 
-                                        if (phoneController.text.length < 10 ||
-                                            phoneController.text.length > 14) {
+                                        if ((phoneController.text.length < 10 ||
+                                                phoneController.text.length >
+                                                    14) &&
+                                            addressController.text.isNotEmpty) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
@@ -532,36 +532,44 @@ class _ProfilePageState extends State<ProfilePage> {
                                         }
 
                                         if (businessNameController
-                                            .text.isEmpty) {
+                                                    .text.length <=
+                                                2 &&
+                                            businessNameController
+                                                .text.isNotEmpty) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
                                                 content: Text(
-                                                    'Nama bisnis tidak boleh kosong')),
+                                                    'Nama bisnis tidak bisa kurang dari dua huruf')),
                                           );
                                           return;
                                         }
 
                                         if (businessDescController
-                                            .text.isEmpty) {
+                                                    .text.length <=
+                                                2 &&
+                                            businessDescController
+                                                .text.isNotEmpty) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
                                                 content: Text(
-                                                    'Deskripsi bisnis tidak boleh kosong')),
+                                                    'Deskripsi bisnis tidak bisa kurang dari dua huruf')),
                                           );
                                           return;
                                         }
 
                                         try {
                                           await _updateProfile();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Profil berhasil diperbarui'),
-                                            ),
-                                          );
+                                          if(context.mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                content: Text(
+                                                    'Profil berhasil diperbarui'),
+                                              ),
+                                            );
+                                          }
 
                                           final updatedData =
                                               await fetchUserProfile();
@@ -571,13 +579,15 @@ class _ProfilePageState extends State<ProfilePage> {
                                             isEditable = false;
                                           });
                                         } catch (e) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Gagal memperbarui profil: $e'),
-                                            ),
-                                          );
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Gagal memperbarui profil: $e'),
+                                              ),
+                                            );
+                                          }
                                         }
                                       },
                                       child: const Text(
@@ -631,12 +641,14 @@ class _ProfilePageState extends State<ProfilePage> {
                               message: "Apakah anda yakin untuk keluar?",
                               onConfirm: () async {
                                 await logout();
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LandingPage()),
-                                );
+                                if (context.mounted) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LandingPage()),
+                                  );
+                                }
                               },
                             );
                           },
@@ -802,10 +814,15 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () async {
                 if (passwordController.text == confirmPasswordController.text) {
                   await _updateProfile();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Password berhasil diganti')),
-                  );
-                  Navigator.of(context).pop();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Password berhasil diganti')),
+                    );
+                  }
+                  if (context.mounted) {
+                    Navigator.of(context).pop();
+                  }
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Passwords tidak sama')),

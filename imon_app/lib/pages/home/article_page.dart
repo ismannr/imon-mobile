@@ -10,13 +10,13 @@ class ArticleDetailPage extends StatelessWidget {
   final String src;
 
   const ArticleDetailPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.imagePath,
     required this.body,
     required this.imgSrc,
     required this.src,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +24,7 @@ class ArticleDetailPage extends StatelessWidget {
       backgroundColor: AppStyling.backgColor,
       appBar: AppBar(
         backgroundColor: AppStyling.backgColor,
-        title: Text("Kembali"),
+        title: const Text("Kembali"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

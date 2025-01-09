@@ -11,7 +11,7 @@ import '../../utils/timezone.dart';
 import 'device_page.dart';
 
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({Key? key}) : super(key: key);
+  const NotificationPage({super.key});
 
   @override
   _NotificationPageState createState() => _NotificationPageState();
@@ -70,7 +70,7 @@ class _NotificationPageState extends State<NotificationPage> {
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.dark,
         ),
-        backgroundColor: Color.fromARGB(255, 95, 115, 193),
+        backgroundColor: const Color.fromARGB(255, 95, 115, 193),
         title: const Center(
           child: Text(
             'Pemberitahuan',
